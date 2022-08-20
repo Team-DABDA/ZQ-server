@@ -42,31 +42,29 @@ class RegisterView(APIView):
 class LoginView(APIView):
     def post(self, request):
 
-        try:
-            nickname = request.data.get('nickname')
-            password = request.data.get('password')
+        nickname = request.data.get('nickname')
+        password = request.data.get('password')
 
-            user = User.objects.get(nickname=nickname, password=password)
+        user = authenticate(nickname=nickname, password=password)
 
-            if user is not None:
-                # serializer = UserSerializer(user)
-                token = RefreshToken.for_user(user)
-                refresh_token = str(token)
-                access_token = str(token.access_token)
-                res = Response(
-                    {
-                        # "nickname": user.nickname,
-                        "message": "Login Succeed",
-                        "token": {
-                            "access": access_token,
-                            "refresh": refresh_token,
-                        },
+        if user is not None:
+            token = RefreshToken.for_user(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "nickname": user.nickname,
+                    "message": "Login Succeed",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
                     },
-                    status=status.HTTP_200_OK
-                )
-                res.set_cookie('refresh', str(refresh_token), httponly=True)
+                },
+                status=status.HTTP_200_OK
+            )
+            res.set_cookie('refresh', str(refresh_token), httponly=True)
 
-                return res
+            return res
 
-        except User.DoesNotExist:
+        else:
             return Response({"message": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
