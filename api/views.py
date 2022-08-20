@@ -96,3 +96,36 @@ class LogoutView(APIView):
             return Response({
                 "message": "Logout Failed"
             }, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class QuizView(APIView):
+    def get(self, request):
+        quizes = Quiz.objects.all()
+        serializer = QuizSerializer(quizes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class QuizDetailView(APIView):
+    def get_object_or_404(self, quiz_id):
+        try:
+            return Quiz.objects.get(id=quiz_id)
+        except Quiz.DoesNotExist:
+            raise Http404
+
+    def get(self, request, quiz_id):
+        quiz = self.get_object_or_404(quiz_id)
+        serializer = QuizDetailSerializer(quiz)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class QuizRankView(APIView):
+    def filter_object_or_404(self, quiz_id):
+        try:
+            return Rank.objects.filter(quiz=quiz_id).order_by('-score')
+        except Rank.DoesNotExist:
+            raise Http404
+
+    def get(self, request, quiz_id):
+        rank = self.filter_object_or_404(quiz_id)
+        serializer = RankSerializer(rank, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

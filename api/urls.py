@@ -9,4 +9,8 @@ urlpatterns = [
     path('register', RegisterView.as_view()),
     path('login', LoginView.as_view()),
     path('logout', LogoutView.as_view()),
+
+    path('quiz', QuizView.as_view()),
+    path('quiz/<int:quiz_id>', QuizDetailView.as_view()),
+    path('quiz/<int:quiz_id>/rank', QuizRankView.as_view())
 ]
