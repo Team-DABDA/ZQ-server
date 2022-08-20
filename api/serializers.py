@@ -19,7 +19,7 @@ class RankSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Rank
+        model = Question
         fields = [
             'id',
             'quiz',
@@ -31,18 +31,13 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class QuizSerializer(serializers.ModelSerializer):
 
-    quiz_question = QuestionSerializer(many=True)
-    quiz_rank = RankSerializer(many=True)
-
     class Meta:
-        model = Rank
+        model = Quiz
         fields = [
             'id',
             'user',
             'title',
             'quiz_score',
-            'quiz_question',
-            'quiz_rank',
         ]
 
 
@@ -51,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
     user_quiz = QuizSerializer(many=True)
 
     class Meta:
-        model = Rank
+        model = User
         fields = [
             'id',
             'nickname',

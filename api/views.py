@@ -96,3 +96,10 @@ class LogoutView(APIView):
             return Response({
                 "message": "Logout Failed"
             }, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class QuizView(APIView):
+    def get(self, request):
+        quizes = Quiz.objects.all()
+        serializer = QuizSerializer(quizes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
