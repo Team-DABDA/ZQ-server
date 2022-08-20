@@ -181,6 +181,15 @@ class QuizDetailView(APIView):
                 return Response("Quiz Edited", status=status.HTTP_201_CREATED)
             return Response(quiz_form.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, quiz_id):
+        cur_quiz = self.get_object_or_404(quiz_id)
+
+        if cur_quiz.user == request.user:
+            cur_quiz.delete()
+
+            return Response(f"Quiz {quiz_id} Deleted", status=status.HTTP_200_OK)
+        return Response("Not allowed user", status=status.HTTP_400_BAD_REQUEST)
+
 
 class QuizRankView(APIView):
     def filter_object_or_404(self, quiz_id):
