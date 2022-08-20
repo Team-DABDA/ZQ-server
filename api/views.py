@@ -104,6 +104,37 @@ class QuizView(APIView):
         serializer = QuizSerializer(quizes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def post(self, request):
+        user = User.objects.get(id=request.user.id)
+
+        title = request.data["title"]
+        quiz_score = request.data["quiz_score"]
+
+        data = {
+            "title": title,
+            "quiz_score": quiz_score,
+            "user": user
+        }
+
+        quiz_form = QuizForm(data=data)
+
+        quiz = quiz_form.save()
+
+        if quiz_form.is_valid():
+
+            for value in request.data.get('quiz_question'):
+                question = Question()
+                question.quiz = quiz
+                question.type = value["type"]
+                question.content = value["content"]
+                question.answer = value["answer"]
+                question.save()
+
+            return Response("Quiz Submitted", status=status.HTTP_201_CREATED)
+        return Response(quiz_form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 class QuizDetailView(APIView):
     def get_object_or_404(self, quiz_id):
