@@ -30,6 +30,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 DEBUG = env('DEBUG')
 
+# SimpleJWT
+SIMPLE_JWT_ALGORITHM = env('SIMPLE_JWT_ALGORITHM')
+
 # AUTH_USER_MODEL = 'api.User'
 
 ALLOWED_HOSTS = [
