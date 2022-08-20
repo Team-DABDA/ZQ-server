@@ -32,5 +32,41 @@ class RegisterView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
+            res.set_cookie('refresh', str(refresh_token), httponly=True)
+
             return res
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 로그인
+class LoginView(APIView):
+    def post(self, request):
+
+        try:
+            nickname = request.data.get('nickname')
+            password = request.data.get('password')
+
+            user = User.objects.get(nickname=nickname, password=password)
+
+            if user is not None:
+                # serializer = UserSerializer(user)
+                token = RefreshToken.for_user(user)
+                refresh_token = str(token)
+                access_token = str(token.access_token)
+                res = Response(
+                    {
+                        # "nickname": user.nickname,
+                        "message": "Login Succeed",
+                        "token": {
+                            "access": access_token,
+                            "refresh": refresh_token,
+                        },
+                    },
+                    status=status.HTTP_200_OK
+                )
+                res.set_cookie('refresh', str(refresh_token), httponly=True)
+
+                return res
+
+        except User.DoesNotExist:
+            return Response({"message": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
