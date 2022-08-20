@@ -1,5 +1,9 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import *
+
+
+User = get_user_model()
 
 
 class RankSerializer(serializers.ModelSerializer):
@@ -53,3 +57,18 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'user_quiz',
         ]
+
+
+# 회원가입
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['nickname', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            nickname=validated_data['nickname'],
+            password=validated_data['password'],
+        )
+        user.save()
+        return user
