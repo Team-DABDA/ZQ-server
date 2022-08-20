@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-import jwt
+import jwt, datetime
 
 
 # 회원 가입
@@ -134,8 +134,6 @@ class QuizView(APIView):
         return Response(quiz_form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class QuizDetailView(APIView):
     def get_object_or_404(self, quiz_id):
         try:
@@ -160,3 +158,18 @@ class QuizRankView(APIView):
         rank = self.filter_object_or_404(quiz_id)
         serializer = RankSerializer(rank, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, quiz_id):
+        quiz = Quiz.objects.get(id=quiz_id)
+        now = datetime.datetime.now()
+
+        for value in request.data:
+            rank = Rank()
+            rank.quiz = quiz
+            rank.nickname = value["nickname"]
+            rank.score = value["score"]
+            rank.created_at = now
+
+            rank.save()
+
+        return Response("Rankings Updated", status=status.HTTP_201_CREATED)
