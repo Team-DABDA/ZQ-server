@@ -10,10 +10,9 @@ class RankSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rank
         fields = [
-            'id',
-            'quiz',
             'nickname',
             'score',
+            'created_at'
         ]
 
 

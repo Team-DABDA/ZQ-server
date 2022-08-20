@@ -116,3 +116,16 @@ class QuizDetailView(APIView):
         quiz = self.get_object_or_404(quiz_id)
         serializer = QuizDetailSerializer(quiz)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class QuizRankView(APIView):
+    def filter_object_or_404(self, quiz_id):
+        try:
+            return Rank.objects.filter(quiz=quiz_id).order_by('-score')
+        except Rank.DoesNotExist:
+            raise Http404
+
+    def get(self, request, quiz_id):
+        rank = self.filter_object_or_404(quiz_id)
+        serializer = RankSerializer(rank, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
